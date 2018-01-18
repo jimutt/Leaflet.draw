@@ -143,7 +143,7 @@ L.Edit.SimpleShape = L.Handler.extend({
 
 	_onMarkerDragStart: function (e) {
 		var marker = e.target;
-		marker.setOpacity(0);
+		//marker.setOpacity(0);
 
 		this._shape.fire('editstart');
 	},
@@ -169,7 +169,7 @@ L.Edit.SimpleShape = L.Handler.extend({
 
 	_onMarkerDragEnd: function (e) {
 		var marker = e.target;
-		marker.setOpacity(1);
+		//marker.setOpacity(1);
 
 		this._fireEdit();
 	},

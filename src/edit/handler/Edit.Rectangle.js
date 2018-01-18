@@ -17,11 +17,23 @@ L.Edit.Rectangle = L.Edit.SimpleShape.extend({
 
 		this._resizeMarkers = [];
 
-		for (var i = 0, l = corners.length; i < l; i++) {
-			this._resizeMarkers.push(this._createMarker(corners[i], this.options.resizeIcon));
-			// Monkey in the corner index as we will need to know this for dragging
-			this._resizeMarkers[i]._cornerIndex = i;
-		}
+		this._bottomLeftResizeIcon = new L.DivIcon({
+			iconSize: new L.Point(15, 15),
+			className:
+				"leaflet-div-icon leaflet-editing-icon touch-resize-rect bottom-left"
+		});
+
+		this._topRightResizeIcon = new L.DivIcon({
+			iconSize: new L.Point(15, 15),
+			className:
+				"leaflet-div-icon leaflet-editing-icon touch-resize-rect top-right"
+		});
+
+		this._resizeMarkers[0] = this._createMarker(corners[1], this._topRightResizeIcon);
+		this._resizeMarkers[0]._cornerIndex = 1;
+
+		this._resizeMarkers[1] = this._createMarker(corners[3], this._bottomLeftResizeIcon);
+		this._resizeMarkers[1]._cornerIndex = 3;
 	},
 
 	_onMarkerDragStart: function (e) {
@@ -34,7 +46,7 @@ L.Edit.Rectangle = L.Edit.SimpleShape.extend({
 
 		this._oppositeCorner = corners[(currentCornerIndex + 2) % 4];
 
-		this._toggleCornerMarkers(0, currentCornerIndex);
+		//this._toggleCornerMarkers(0, currentCornerIndex);
 	},
 
 	_onMarkerDragEnd: function (e) {
@@ -49,7 +61,7 @@ L.Edit.Rectangle = L.Edit.SimpleShape.extend({
 			marker.setLatLng(center);
 		}
 
-		this._toggleCornerMarkers(1);
+		//this._toggleCornerMarkers(1);
 
 		this._repositionCornerMarkers();
 
@@ -109,7 +121,7 @@ L.Edit.Rectangle = L.Edit.SimpleShape.extend({
 		var corners = this._getCorners();
 
 		for (var i = 0, l = this._resizeMarkers.length; i < l; i++) {
-			this._resizeMarkers[i].setLatLng(corners[i]);
+			this._resizeMarkers[i].setLatLng(corners[this._resizeMarkers[i]._cornerIndex]);
 		}
 	}
 });
