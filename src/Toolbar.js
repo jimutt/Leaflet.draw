@@ -48,31 +48,31 @@ L.Toolbar = L.Class.extend({
 
 	// @method initialize(options): void
 	// Toolbar constructor
-	initialize: function (options) {
+	initialize: function(options) {
 		L.setOptions(this, options);
 
 		this._modes = {};
 		this._actionButtons = [];
 		this._activeMode = null;
 
-        var version = L.version.split(".");
-        //If Version is >= 1.2.0
-        if(parseInt(version[0],10) === 1 && parseInt(version[1],10) >= 2 ) {
-            L.Toolbar.include(L.Evented.prototype);
-        } else {
-            L.Toolbar.include(L.Mixin.Events);
-        }
+		var version = L.version.split('.');
+		//If Version is >= 1.2.0
+		if (parseInt(version[0], 10) === 1 && parseInt(version[1], 10) >= 2) {
+			L.Toolbar.include(L.Evented.prototype);
+		} else {
+			L.Toolbar.include(L.Mixin.Events);
+		}
 	},
 
 	// @method enabled(): boolean
 	// Gets a true/false of whether the toolbar is enabled
-	enabled: function () {
+	enabled: function() {
 		return this._activeMode !== null;
 	},
 
 	// @method disable(): void
 	// Disables the toolbar
-	disable: function () {
+	disable: function() {
 		if (!this.enabled()) {
 			return;
 		}
@@ -82,14 +82,17 @@ L.Toolbar = L.Class.extend({
 
 	// @method addToolbar(map): L.DomUtil
 	// Adds the toolbar to the map and returns the toolbar dom element
-	addToolbar: function (map) {
+	addToolbar: function(map) {
 		var container = L.DomUtil.create('div', 'leaflet-draw-section'),
 			buttonIndex = 0,
 			buttonClassPrefix = this._toolbarClass || '',
 			modeHandlers = this.getModeHandlers(map),
 			i;
 
-		this._toolbarContainer = L.DomUtil.create('div', 'leaflet-draw-toolbar leaflet-bar');
+		this._toolbarContainer = L.DomUtil.create(
+			'div',
+			'leaflet-draw-toolbar leaflet-bar'
+		);
 		this._map = map;
 
 		for (i = 0; i < modeHandlers.length; i++) {
@@ -124,7 +127,7 @@ L.Toolbar = L.Class.extend({
 
 	// @method removeToolbar(): void
 	// Removes the toolbar and drops the handler event listeners
-	removeToolbar: function () {
+	removeToolbar: function() {
 		// Dispose each handler
 		for (var handlerId in this._modes) {
 			if (this._modes.hasOwnProperty(handlerId)) {
@@ -158,12 +161,20 @@ L.Toolbar = L.Class.extend({
 		this._actionsContainer = null;
 	},
 
-	_initModeHandler: function (handler, container, buttonIndex, classNamePredix, buttonTitle) {
+	_initModeHandler: function(
+		handler,
+		container,
+		buttonIndex,
+		classNamePredix,
+		buttonTitle
+	) {
 		var type = handler.type;
 
 		this._modes[type] = {};
 
 		this._modes[type].handler = handler;
+
+		console.log(buttonTitle);
 
 		this._modes[type].button = this._createButton({
 			type: type,
@@ -183,14 +194,17 @@ L.Toolbar = L.Class.extend({
 
 	/* Detect iOS based on browser User Agent, based on:
 	 * http://stackoverflow.com/a/9039885 */
-	_detectIOS: function () {
-		var iOS = (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
+	_detectIOS: function() {
+		var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 		return iOS;
 	},
 
-	_createButton: function (options) {
-
-		var link = L.DomUtil.create('a', options.className || '', options.container);
+	_createButton: function(options) {
+		var link = L.DomUtil.create(
+			'a',
+			options.className || '',
+			options.container
+		);
 		// Screen reader tag
 		var sr = L.DomUtil.create('span', 'sr-only', options.container);
 
@@ -210,8 +224,7 @@ L.Toolbar = L.Class.extend({
 		/* iOS does not use click events */
 		var buttonEvent = this._detectIOS() ? 'touchstart' : 'click';
 
-		L.DomEvent
-			.on(link, 'click', L.DomEvent.stopPropagation)
+		L.DomEvent.on(link, 'click', L.DomEvent.stopPropagation)
 			.on(link, 'mousedown', L.DomEvent.stopPropagation)
 			.on(link, 'dblclick', L.DomEvent.stopPropagation)
 			.on(link, 'touchstart', L.DomEvent.stopPropagation)
@@ -221,12 +234,11 @@ L.Toolbar = L.Class.extend({
 		return link;
 	},
 
-	_disposeButton: function (button, callback) {
+	_disposeButton: function(button, callback) {
 		/* iOS does not use click events */
 		var buttonEvent = this._detectIOS() ? 'touchstart' : 'click';
 
-		L.DomEvent
-			.off(button, 'click', L.DomEvent.stopPropagation)
+		L.DomEvent.off(button, 'click', L.DomEvent.stopPropagation)
 			.off(button, 'mousedown', L.DomEvent.stopPropagation)
 			.off(button, 'dblclick', L.DomEvent.stopPropagation)
 			.off(button, 'touchstart', L.DomEvent.stopPropagation)
@@ -234,39 +246,51 @@ L.Toolbar = L.Class.extend({
 			.off(button, buttonEvent, callback);
 	},
 
-	_handlerActivated: function (e) {
+	_handlerActivated: function(e) {
 		// Disable active mode (if present)
 		this.disable();
 
 		// Cache new active feature
 		this._activeMode = this._modes[e.handler];
 
-		L.DomUtil.addClass(this._activeMode.button, 'leaflet-draw-toolbar-button-enabled');
+		L.DomUtil.addClass(
+			this._activeMode.button,
+			'leaflet-draw-toolbar-button-enabled'
+		);
 
 		this._showActionsToolbar();
 
 		this.fire('enable');
 	},
 
-	_handlerDeactivated: function () {
+	_handlerDeactivated: function() {
 		this._hideActionsToolbar();
 
-		L.DomUtil.removeClass(this._activeMode.button, 'leaflet-draw-toolbar-button-enabled');
+		L.DomUtil.removeClass(
+			this._activeMode.button,
+			'leaflet-draw-toolbar-button-enabled'
+		);
 
 		this._activeMode = null;
 
 		this.fire('disable');
 	},
 
-	_createActions: function (handler) {
+	_createActions: function(handler) {
 		var container = this._actionsContainer,
 			buttons = this.getActions(handler),
 			l = buttons.length,
-			li, di, dl, button;
+			li,
+			di,
+			dl,
+			button;
 
 		// Dispose the actions toolbar (todo: dispose only not used buttons)
 		for (di = 0, dl = this._actionButtons.length; di < dl; di++) {
-			this._disposeButton(this._actionButtons[di].button, this._actionButtons[di].callback);
+			this._disposeButton(
+				this._actionButtons[di].button,
+				this._actionButtons[di].callback
+			);
 		}
 		this._actionButtons = [];
 
@@ -297,7 +321,7 @@ L.Toolbar = L.Class.extend({
 		}
 	},
 
-	_showActionsToolbar: function () {
+	_showActionsToolbar: function() {
 		var buttonIndex = this._activeMode.buttonIndex,
 			lastButtonIndex = this._lastButtonIndex,
 			toolbarPosition = this._activeMode.button.offsetTop - 1;
@@ -314,7 +338,10 @@ L.Toolbar = L.Class.extend({
 		}
 
 		if (buttonIndex === lastButtonIndex) {
-			L.DomUtil.addClass(this._toolbarContainer, 'leaflet-draw-toolbar-nobottom');
+			L.DomUtil.addClass(
+				this._toolbarContainer,
+				'leaflet-draw-toolbar-nobottom'
+			);
 			L.DomUtil.addClass(this._actionsContainer, 'leaflet-draw-actions-bottom');
 		}
 
@@ -322,13 +349,19 @@ L.Toolbar = L.Class.extend({
 		this._map.fire(L.Draw.Event.TOOLBAROPENED);
 	},
 
-	_hideActionsToolbar: function () {
+	_hideActionsToolbar: function() {
 		this._actionsContainer.style.display = 'none';
 
 		L.DomUtil.removeClass(this._toolbarContainer, 'leaflet-draw-toolbar-notop');
-		L.DomUtil.removeClass(this._toolbarContainer, 'leaflet-draw-toolbar-nobottom');
+		L.DomUtil.removeClass(
+			this._toolbarContainer,
+			'leaflet-draw-toolbar-nobottom'
+		);
 		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-top');
-		L.DomUtil.removeClass(this._actionsContainer, 'leaflet-draw-actions-bottom');
+		L.DomUtil.removeClass(
+			this._actionsContainer,
+			'leaflet-draw-actions-bottom'
+		);
 		this._map.fire(L.Draw.Event.TOOLBARCLOSED);
 	}
 });
